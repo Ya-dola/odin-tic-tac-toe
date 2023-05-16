@@ -1,0 +1,189 @@
+:root {
+    /*Dola Colour Palette*/
+    --blue: #2d70de;
+    --green1: #14b8a6;
+    --green2: #3be188;
+    --green3: #218550;
+    --green4: #10ae71;
+    --red1: #ff5454;
+    --red2: #f87171;
+    --red3: #a71c1c;
+    --red4: #e95a5a;
+    --orange1: #ff9a7c;
+    --orange2: #ffb099;
+    --orange3: #fdba74;
+    --orange4: #ff9f87;
+    --purple: #9482ed;
+    --white1: #eaeaea;
+    --white2: #e6e9ec;
+    --gray1: #dddfe4;
+    --gray2: #c7ccd2;
+    --gray3: #d4d6da;
+    --gray4: #9fa3a8;
+    --dark1: #3d3d3d;
+    --dark2: #2a2a2a;
+    --dark3: #7c8084;
+
+    --background: var(--gray1);
+    --background-header-card: var(--white2);
+    --background-pic: var(--orange1);
+    --background-sidebar: var(--blue);
+
+    --txt-light: var(--white1);
+    --txt-dark: var(--dark2);
+    --txt-secondary: var(--dark3);
+    --txt-btn: var(--dark1);
+    --txt-error: var(--red1);
+
+    --clr-btn: var(--blue);
+    --clr-btn-status: var(--green4);
+    --clr-btn-red: var(--red4);
+    --clr-input-label: var(--gray4);
+    --clr-card-border: var(--orange4);
+    --clr-modal-sep: var(--gray4);
+    --clr-switch-bg-on: var(--green2);
+    --clr-switch-on: var(--green3);
+    --clr-switch-bg-off: var(--red2);
+    --clr-switch-off: var(--red3);
+    --clr-footer: var(--orange2);
+    --clr-overlay: rgba(0, 0, 0, 0.4);
+
+    --size-heading: 5rem;
+    --size-txt: 1.125rem;
+    --size-header-account: 1.4rem;
+    --size-header-name: 1.6rem;
+    --size-form-label: 1.5rem;
+    --size-form-input: 1.75rem;
+    --size-footers: 1rem;
+    --size-button: 1.3rem;
+
+    --weight-light: 300;
+    --weight-normal: 500;
+    --weight-bold: 700;
+    --weight-heavy: 900;
+
+    --gap-sidebar: 1.2rem;
+    --gap-trending: 1rem;
+
+    --pic-default-wh: 4rem;
+
+    /*--url-icon: url(books.png);*/
+
+    --icon-default-wh: 2.4rem;
+    --icon-big-wh: 3rem;
+    --icon-huge-wh: 5rem;
+
+    --shadow-header: 0 10px 14px -3px rgba(0, 0, 0, 0.125),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --shadow-card: 0 4px 6px 2px rgba(0, 0, 0, 0.125),
+    0 4px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-sidebar: 6px 0 12px -2px rgba(0, 0, 0, 0.15),
+    4px 0 6px -2px rgba(0, 0, 0, 0.2);
+    --shadow-btn: 0 0 4px 4px rgba(0, 0, 0, 0.1),
+    0 4px 4px -2px rgba(0, 0, 0, 0.125);
+    --shadow-pic: 0 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    /*border: 1px var(--red1) solid;*/
+}
+
+/*Elements*/
+body {
+    min-height: 100vh;
+    height: 100vh; /*Forces scrolling on Overflowing Areas*/
+    min-width: 100vw;
+    width: 100vw; /*Forces scrolling on Overflowing Areas*/
+    background: var(--background);
+    color: var(--txt-dark);
+    font-family: Lato, sans-serif;
+    font-size: var(--size-txt);
+    display: grid;
+    grid-template: auto 1fr min-content / 1fr;
+    grid-template-areas:
+            'header'
+            'content'
+            'footer';
+}
+
+button {
+    border: none;
+    appearance: none;
+    outline: none;
+    background: none;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+}
+
+button.action {
+    background-color: var(--clr-btn);
+    color: var(--txt-light);
+    font-size: var(--size-button);
+    font-weight: 700;
+    padding: 0.75rem 2.3rem;
+    border-radius: 99rem;
+    box-shadow: var(--shadow-btn);
+}
+
+button.action:hover {
+    transform: translateY(-4%);
+}
+
+button.action:active {
+    transform: translateY(6%);
+}
+
+button.status:hover {
+    scale: 1.25;
+    filter: brightness(90%);
+}
+
+button.status:active {
+    filter: brightness(90%);
+    transform: translateY(6%);
+}
+
+/*Classes*/
+.header {
+    grid-area: header;
+    padding: 1.5rem 4rem;
+    background-color: var(--background-header-card);
+    box-shadow: var(--shadow-header);
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 14rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header .left {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 3rem;
+    align-items: center;
+}
+
+.header .icon {
+    /*background: var(--url-icon) center center / cover no-repeat;*/
+    height: var(--icon-huge-wh);
+    aspect-ratio: 1 / 1;
+}
+
+.footer {
+    grid-area: footer;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    font-size: var(--size-footers);
+    background-color: var(--clr-footer);
+}
+
+.footer a {
+    text-decoration: underline;
+    color: var(--txt-dark);
+}
