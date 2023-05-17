@@ -125,7 +125,7 @@ button.action {
     color: var(--txt-light);
     font-size: var(--size-button);
     font-weight: 700;
-    padding: 0.75rem 2.3rem;
+    padding: 0.75rem 2.2rem;
     border-radius: 99rem;
     box-shadow: var(--shadow-btn);
 }
@@ -151,20 +151,20 @@ button.status:active {
 /*Classes*/
 .header {
     grid-area: header;
-    padding: 1.5rem 4rem;
+    padding: 1.5rem 2rem;
     background-color: var(--background-header-card);
     box-shadow: var(--shadow-header);
     display: flex;
     flex-flow: row nowrap;
-    gap: 14rem;
     align-items: center;
     justify-content: space-between;
+    gap: 2rem;
 }
 
 .header .left {
     display: flex;
     flex-flow: row nowrap;
-    gap: 3rem;
+    gap: 1.4rem;
     align-items: center;
 }
 
@@ -172,6 +172,13 @@ button.status:active {
     /*background: var(--url-icon) center center / cover no-repeat;*/
     height: var(--icon-huge-wh);
     aspect-ratio: 1 / 1;
+}
+
+.header .scorecard, .scorecard .card {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 1.5rem;
 }
 
 .footer {
