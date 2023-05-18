@@ -14,20 +14,50 @@
                 <div class="icon"></div>
                 <h1 class="title">Yadola's Tic Tac Toe</h1>
             </div>
+            <div class="options">
+                <div class="option">
+                    <div class="input-div">
+                        <input type="text" id="inputOne" maxlength="10" required>
+                        <label for="inputOne">Player One</label>
+                    </div>
+                    <h3 class="score">Human</h3>
+                </div>
+                <div class="option">
+                    <div class="input-div">
+                        <input type="text" id="inputTwo" maxlength="10" required>
+                        <label for="inputTwo">Player Two</label>
+                    </div>
+                    <h3 class="score">AI - Easy</h3>
+                </div>
+            </div>
+            <button class="action" id="btnMenu">Restart</button>
+        </header>
+        <main class="content">
             <div class="scorecard">
                 <div class="card one">
                     <h3 class="name">Player One</h3>
                     <h2 class="score">21</h2>
+                </div>
+                <div class="card round">
+                    <h3 class="title">Round</h3>
+                    <h2 class="number">420</h2>
                 </div>
                 <div class="card two">
                     <h3 class="name">Player Two</h3>
                     <h2 class="score">69</h2>
                 </div>
             </div>
-            <button class="action" id="btnMenu">Menu</button>
-        </header>
-        <main class="content">
-
+            <div class="board-game">
+                <div class="tile" index="0">X</div>
+                <div class="tile" index="1">O</div>
+                <div class="tile" index="2">X</div>
+                <div class="tile" index="3">O</div>
+                <div class="tile" index="4">X</div>
+                <div class="tile" index="5">O</div>
+                <div class="tile" index="6">X</div>
+                <div class="tile" index="7">O</div>
+                <div class="tile" index="8">X</div>
+            </div>
         </main>
         <footer class="footer">
             <div>

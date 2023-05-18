@@ -33,6 +33,7 @@
     --txt-dark: var(--dark2);
     --txt-secondary: var(--dark3);
     --txt-btn: var(--dark1);
+    --txt-game-tile: var(--dark1);
     --txt-error: var(--red1);
 
     --clr-btn: var(--blue);
@@ -50,10 +51,10 @@
 
     --size-heading: 5rem;
     --size-txt: 1.125rem;
-    --size-header-account: 1.4rem;
+    --size-game-tile: 4.6rem;
     --size-header-name: 1.6rem;
-    --size-form-label: 1.5rem;
-    --size-form-input: 1.75rem;
+    --size-form-label: 1.25rem;
+    --size-form-input: 1.5rem;
     --size-footers: 1rem;
     --size-button: 1.3rem;
 
@@ -67,7 +68,7 @@
 
     --pic-default-wh: 4rem;
 
-    /*--url-icon: url(books.png);*/
+    --url-logo: url(logo.png);
 
     --icon-default-wh: 2.4rem;
     --icon-big-wh: 3rem;
@@ -169,16 +170,105 @@ button.status:active {
 }
 
 .header .icon {
-    /*background: var(--url-icon) center center / cover no-repeat;*/
+    background: var(--url-logo) center center / cover no-repeat;
     height: var(--icon-huge-wh);
     aspect-ratio: 1 / 1;
 }
 
-.header .scorecard, .scorecard .card {
+.header .options, .content .scorecard, .scorecard .card {
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
     gap: 1.5rem;
+}
+
+.options .option {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1rem;
+}
+
+.input-div {
+    position: relative;
+    width: max(14vw, 12rem);
+    margin-top: 1.4rem;
+}
+
+.input-div input {
+    width: 100%;
+    padding: 0.4rem 0;
+    font-size: var(--size-form-input);
+    font-family: inherit;
+    border: none;
+    border-bottom: 1px var(--clr-modal-sep) solid;
+    outline: none;
+    background: transparent;
+}
+
+.input-div label {
+    position: absolute;
+    top: 0;
+    left: 1.75rem;
+    padding: 0.25rem 0;
+    font-size: var(--size-form-label);
+    font-weight: var(--weight-bold);
+    color: var(--clr-input-label);
+    pointer-events: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.input-div input:focus ~ label,
+.input-div input:valid ~ label {
+    top: -1.75rem;
+    left: 0;
+}
+
+.input-div label.error {
+    color: var(--txt-error);
+}
+
+.content {
+    grid-area: content;
+    overflow: auto; /*Forces scrolling on Overflowing Areas*/
+    padding: 2rem;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    gap: 4rem;
+}
+
+.scorecard .round {
+    padding: 0 3rem;
+}
+
+.content .board-game {
+    display: grid;
+    grid-template: repeat(3, minmax(80px, 140px)) / repeat(3, minmax(80px, 140px));
+    gap: 14px;
+}
+
+.board-game .tile {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    background-color: var(--background-header-card);
+    border-radius: 2rem;
+    box-shadow: var(--shadow-card);
+    font-size: var(--size-game-tile);
+    color: var(--txt-game-tile);
+    transition: all 0.1s cubic-bezier(1, 0.11, 0.56, 2.05);
+}
+
+.board-game .tile:hover {
+    transform: scale(1.06);
+    filter: brightness(94%);
+}
+
+.board-game .tile:active {
+    transform: scale(0.96);
+    filter: brightness(84%);
 }
 
 .footer {
