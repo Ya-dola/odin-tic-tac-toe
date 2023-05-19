@@ -13,7 +13,8 @@
     --orange2: #ffb099;
     --orange3: #fdba74;
     --orange4: #ff9f87;
-    --purple: #9482ed;
+    --purple1: #9482ed;
+    --purple2: #755ee8;
     --white1: #eaeaea;
     --white2: #e6e9ec;
     --gray1: #dddfe4;
@@ -25,7 +26,7 @@
     --dark3: #7c8084;
 
     --background: var(--gray1);
-    --background-header-card: var(--white2);
+    --background-header-tile: var(--white2);
     --background-pic: var(--orange1);
     --background-sidebar: var(--blue);
 
@@ -36,9 +37,9 @@
     --txt-game-tile: var(--dark1);
     --txt-error: var(--red1);
 
-    --clr-btn: var(--blue);
+    --clr-btn-action: var(--blue);
     --clr-btn-status: var(--green4);
-    --clr-btn-red: var(--red4);
+    --clr-btn-diff: var(--purple2);
     --clr-input-label: var(--gray4);
     --clr-card-border: var(--orange4);
     --clr-modal-sep: var(--gray4);
@@ -74,6 +75,8 @@
     --icon-big-wh: 3rem;
     --icon-huge-wh: 5rem;
 
+    --anim-tile: cubic-bezier(1, 0.11, 0.56, 2.05);
+
     --shadow-header: 0 10px 14px -3px rgba(0, 0, 0, 0.125),
     0 4px 6px -4px rgba(0, 0, 0, 0.1);
     --shadow-card: 0 4px 6px 2px rgba(0, 0, 0, 0.125),
@@ -82,6 +85,10 @@
     4px 0 6px -2px rgba(0, 0, 0, 0.2);
     --shadow-btn: 0 0 4px 4px rgba(0, 0, 0, 0.1),
     0 4px 4px -2px rgba(0, 0, 0, 0.125);
+    --shadow-btn-action: 0 0 4px 2px var(--clr-btn-action),
+    0 0 6px -2px rgba(0, 0, 0, 0.25);
+    --shadow-btn-diff: 0 0 4px 2px var(--clr-btn-diff),
+    0 0 6px -2px rgba(0, 0, 0, 0.25);
     --shadow-pic: 0 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
@@ -121,14 +128,14 @@ button {
     transition: all 0.1s ease-in-out;
 }
 
-button.action {
-    background-color: var(--clr-btn);
+button.action, button.diff {
+    background-color: var(--clr-btn-action);
     color: var(--txt-light);
     font-size: var(--size-button);
     font-weight: 700;
     padding: 0.75rem 2.2rem;
     border-radius: 99rem;
-    box-shadow: var(--shadow-btn);
+    box-shadow: var(--shadow-btn-action);
 }
 
 button.action:hover {
@@ -136,24 +143,32 @@ button.action:hover {
 }
 
 button.action:active {
-    transform: translateY(6%);
+    transform: translateY(8%);
 }
 
-button.status:hover {
-    scale: 1.25;
-    filter: brightness(90%);
+button.diff {
+    width: max(11rem, 80%);
+    padding: 0.75rem 1.4rem;
+    background-color: var(--clr-btn-diff);
+    box-shadow: var(--shadow-btn-diff);
+    transition-timing-function: var(--anim-tile);
 }
 
-button.status:active {
-    filter: brightness(90%);
-    transform: translateY(6%);
+button.diff:hover {
+    scale: 1.06;
+    filter: brightness(96%);
+}
+
+button.diff:active {
+    scale: 0.98;
+    filter: brightness(84%);
 }
 
 /*Classes*/
 .header {
     grid-area: header;
     padding: 1.5rem 2rem;
-    background-color: var(--background-header-card);
+    background-color: var(--background-header-tile);
     box-shadow: var(--shadow-header);
     display: flex;
     flex-flow: row nowrap;
@@ -186,6 +201,7 @@ button.status:active {
     display: flex;
     flex-flow: column nowrap;
     gap: 1rem;
+    align-items: center;
 }
 
 .input-div {
@@ -253,21 +269,21 @@ button.status:active {
     align-items: center;
     justify-content: center;
     user-select: none;
-    background-color: var(--background-header-card);
+    background-color: var(--background-header-tile);
     border-radius: 2rem;
     box-shadow: var(--shadow-card);
     font-size: var(--size-game-tile);
     color: var(--txt-game-tile);
-    transition: all 0.1s cubic-bezier(1, 0.11, 0.56, 2.05);
+    transition: all 0.1s var(--anim-tile);
 }
 
 .board-game .tile:hover {
-    transform: scale(1.06);
-    filter: brightness(94%);
+    scale: 1.1;
+    filter: brightness(96%);
 }
 
 .board-game .tile:active {
-    transform: scale(0.96);
+    scale: 0.96;
     filter: brightness(84%);
 }
 
