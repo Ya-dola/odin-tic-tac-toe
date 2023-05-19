@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Julee&family=Mansalva&display=swap');
+
 :root {
     /*Dola Colour Palette*/
     --blue: #2d70de;
@@ -54,14 +56,14 @@
 
     --size-heading: 5rem;
     --size-txt: 1.125rem;
-    --size-game-tile: 4.6rem;
+    --size-game-tile: 6rem;
     --size-header-name: 1.6rem;
     --size-form-label: 1.25rem;
     --size-form-input: 1.5rem;
     --size-footers: 1rem;
     --size-button: 1.3rem;
-    --size-scorecard: 1.125rem;
-    --size-sb-round: 1.8rem;
+    --size-sb-name: 1.5rem;
+    --size-sb-score: 2.4rem;
 
     --weight-light: 300;
     --weight-normal: 500;
@@ -99,7 +101,8 @@
     0 0 6px -2px rgba(0, 0, 0, 0.25);
     --shadow-sb-two: 0 0 4px 2px var(--clr-sb-two),
     0 0 6px -2px rgba(0, 0, 0, 0.25);
-    --shadow-pic: 0 0 1px 2px rgba(0, 0, 0, 0.1);
+    --shadow-deactive: 0 0 4px 2px var(--white2),
+    0 0 10px -2px rgba(0, 0, 0, 0.8);
 }
 
 *,
@@ -264,18 +267,37 @@ button.diff:active {
 }
 
 .content .scoreboard .card {
-    font-size: var(--size-scorecard);
+    font-size: var(--size-sb-name);
+    font-family: 'Julee', cursive;
     color: var(--txt-dark1);
     padding: 0.5rem 1.4rem;
     border-radius: 99rem;
+    transition-property: background-color, box-shadow;
+    transition-duration: 0.25s;
+    transition-timing-function: ease-in-out;
+}
+
+.content .scoreboard .card .name {
+    font-size: var(--size-sb-name);
+}
+
+.content .scoreboard .card .score {
+    font-size: var(--size-sb-score);
 }
 
 .content .scoreboard .card.round {
-    font-size: var(--size-sb-round);
     padding: 0.5rem 2rem;
 
     background-color: var(--clr-sb-round);
     box-shadow: var(--shadow-sb-round);
+}
+
+.content .scoreboard .card.round .title {
+    font-size: calc(var(--size-sb-name) * 1.5);
+}
+
+.content .scoreboard .card.round .num {
+    font-size: calc(var(--size-sb-score) * 1.5);
 }
 
 .content .scoreboard .card.one {
@@ -286,6 +308,11 @@ button.diff:active {
 .content .scoreboard .card.two {
     background-color: var(--clr-sb-two);
     box-shadow: var(--shadow-sb-two);
+}
+
+.content .scoreboard .card.de-active {
+    background-color: var(--background-header-tile);
+    box-shadow: var(--shadow-deactive);
 }
 
 .content .board-game {
@@ -304,6 +331,7 @@ button.diff:active {
     border-radius: 2rem;
     box-shadow: var(--shadow-card);
     font-size: var(--size-game-tile);
+    font-family: 'Mansalva', cursive;
     color: var(--txt-game-tile);
     transition: all 0.1s var(--anim-tile);
 }
