@@ -5,6 +5,7 @@
     --green2: #3be188;
     --green3: #218550;
     --green4: #10ae71;
+    --green5: #15e092;
     --red1: #ff5454;
     --red2: #f87171;
     --red3: #a71c1c;
@@ -13,6 +14,8 @@
     --orange2: #ffb099;
     --orange3: #fdba74;
     --orange4: #ff9f87;
+    --orange5: #ff8d70;
+    --yellow1: #f4e652;
     --purple1: #9482ed;
     --purple2: #755ee8;
     --white1: #eaeaea;
@@ -31,7 +34,8 @@
     --background-sidebar: var(--blue);
 
     --txt-light: var(--white1);
-    --txt-dark: var(--dark2);
+    --txt-dark1: var(--dark1);
+    --txt-dark2: var(--dark2);
     --txt-secondary: var(--dark3);
     --txt-btn: var(--dark1);
     --txt-game-tile: var(--dark1);
@@ -41,12 +45,10 @@
     --clr-btn-status: var(--green4);
     --clr-btn-diff: var(--purple2);
     --clr-input-label: var(--gray4);
-    --clr-card-border: var(--orange4);
     --clr-modal-sep: var(--gray4);
-    --clr-switch-bg-on: var(--green2);
-    --clr-switch-on: var(--green3);
-    --clr-switch-bg-off: var(--red2);
-    --clr-switch-off: var(--red3);
+    --clr-sb-round: var(--green5);
+    --clr-sb-one: var(--orange5);
+    --clr-sb-two: var(--yellow1);
     --clr-footer: var(--orange2);
     --clr-overlay: rgba(0, 0, 0, 0.4);
 
@@ -58,6 +60,8 @@
     --size-form-input: 1.5rem;
     --size-footers: 1rem;
     --size-button: 1.3rem;
+    --size-scorecard: 1.125rem;
+    --size-sb-round: 1.8rem;
 
     --weight-light: 300;
     --weight-normal: 500;
@@ -89,6 +93,12 @@
     0 0 6px -2px rgba(0, 0, 0, 0.25);
     --shadow-btn-diff: 0 0 4px 2px var(--clr-btn-diff),
     0 0 6px -2px rgba(0, 0, 0, 0.25);
+    --shadow-sb-round: 0 0 4px 2px var(--clr-sb-round),
+    0 0 6px -2px rgba(0, 0, 0, 0.25);
+    --shadow-sb-one: 0 0 4px 2px var(--clr-sb-one),
+    0 0 6px -2px rgba(0, 0, 0, 0.25);
+    --shadow-sb-two: 0 0 4px 2px var(--clr-sb-two),
+    0 0 6px -2px rgba(0, 0, 0, 0.25);
     --shadow-pic: 0 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
@@ -108,7 +118,7 @@ body {
     min-width: 100vw;
     width: 100vw; /*Forces scrolling on Overflowing Areas*/
     background: var(--background);
-    color: var(--txt-dark);
+    color: var(--txt-dark2);
     font-family: Lato, sans-serif;
     font-size: var(--size-txt);
     display: grid;
@@ -190,7 +200,7 @@ button.diff:active {
     aspect-ratio: 1 / 1;
 }
 
-.header .options, .content .scorecard, .scorecard .card {
+.header .options, .content .scoreboard, .scoreboard .card {
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
@@ -253,8 +263,29 @@ button.diff:active {
     gap: 4rem;
 }
 
-.scorecard .round {
-    padding: 0 3rem;
+.content .scoreboard .card {
+    font-size: var(--size-scorecard);
+    color: var(--txt-dark1);
+    padding: 0.5rem 1.4rem;
+    border-radius: 99rem;
+}
+
+.content .scoreboard .card.round {
+    font-size: var(--size-sb-round);
+    padding: 0.5rem 2rem;
+
+    background-color: var(--clr-sb-round);
+    box-shadow: var(--shadow-sb-round);
+}
+
+.content .scoreboard .card.one {
+    background-color: var(--clr-sb-one);
+    box-shadow: var(--shadow-sb-one);
+}
+
+.content .scoreboard .card.two {
+    background-color: var(--clr-sb-two);
+    box-shadow: var(--shadow-sb-two);
 }
 
 .content .board-game {
@@ -298,5 +329,5 @@ button.diff:active {
 
 .footer a {
     text-decoration: underline;
-    color: var(--txt-dark);
+    color: var(--txt-dark2);
 }
