@@ -6,16 +6,34 @@ const diffOptions = Object.freeze({
                                       HARD: 'AI - Hard'
                                   });
 
+// Constants
+const indexAttr = 'data-index';
+
+// FACTORIES
+const GameBoard = () => {
+    let board = Array.from(Array(9).fill(undefined));
+    console.log(board);
+
+    function emptyBoard() {
+        board.fill(undefined);
+    }
+
+    function boardLength() {
+        return board.length;
+    }
+
+    return {emptyBoard, boardLength};
+};
+
 // MODULES
-const details = (() => {
+const DETAILS = (() => {
     const inputOne = document.getElementById('inputOne');
     const inputTwo = document.getElementById('inputTwo');
     const diffOne = document.getElementById('diffOne');
     const diffTwo = document.getElementById('diffTwo');
     const sbOne = document.getElementById('sbOne');
     const sbTwo = document.getElementById('sbTwo');
-    const btnStart = document.getElementById('btnStart');
-    const btnRestart = document.getElementById('btnRestart');
+    const btnGame = document.getElementById('btnGame');
 
     let plyrOneName = "";
     let plyrTwoName = "";
@@ -33,20 +51,20 @@ const details = (() => {
     }
 
     inputOne.addEventListener('blur', () => {
-        plyrOneName = inputOne.value !== '' ? inputOne.value : "";
+        plyrOneName = inputOne.value !== '' ? inputOne.value : "Player One";
         sbOne.textContent = inputOne.value !== '' ? inputOne.value : "Player One";
     });
     inputTwo.addEventListener('blur', () => {
-        plyrTwoName = inputTwo.value !== '' ? inputTwo.value : "";
+        plyrTwoName = inputTwo.value !== '' ? inputTwo.value : "Player Two";
         sbTwo.textContent = inputTwo.value !== '' ? inputTwo.value : "Player Two";
     });
     diffOne.addEventListener('click', updateDiffOne);
     diffTwo.addEventListener('click', updateDiffTwo);
-    btnStart.addEventListener('click', () => {
-        btnStart.classList.add('hide');
-        btnRestart.classList.remove('hide');
+    btnGame.addEventListener('click', () => {
+        btnGame.textContent = "Restart";
 
-        // Start Game Function from Game Module
+        // Start Game Function from Game Ctrl Module
+        GAMECTRL.StartNewGame();
     });
 
     // Webpage Init Listener
@@ -58,4 +76,42 @@ const details = (() => {
     return {plyrOneName, plyrTwoName, diffOneCtr, diffTwoCtr};
 })();
 
-// FACTORIES
+const GAMECTRL = (() => {
+    const gameBoardView = document.getElementById('gameBoardView');
+
+    const activeBoard = GameBoard();
+
+    function resetExistingBoard() {
+        activeBoard.emptyBoard();
+        gameBoardView.innerHTML = "";
+    }
+
+    function displayBoardView() {
+        for (let i = 0; i < activeBoard.boardLength(); i++) {
+            const boardTile = document.createElement('div');
+
+            boardTile.classList.add('tile');
+            boardTile.setAttribute(indexAttr, i.toString());
+            boardTile.addEventListener('click', (evt) => {
+                turnClick(evt.target);
+            });
+
+            gameBoardView.appendChild(boardTile);
+        }
+    }
+
+    function StartNewGame() {
+        resetExistingBoard();
+
+        displayBoardView();
+    }
+
+    // Tile is Clicked Event
+    function turnClick(target) {
+        console.log(target.getAttribute(indexAttr));
+        target.textContent = "X";
+    }
+
+    return {StartNewGame};
+})();
+
