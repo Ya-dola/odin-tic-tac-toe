@@ -14,6 +14,8 @@ const details = (() => {
     const diffTwo = document.getElementById('diffTwo');
     const sbOne = document.getElementById('sbOne');
     const sbTwo = document.getElementById('sbTwo');
+    const btnStart = document.getElementById('btnStart');
+    const btnRestart = document.getElementById('btnRestart');
 
     let plyrOneName = "";
     let plyrTwoName = "";
@@ -40,6 +42,12 @@ const details = (() => {
     });
     diffOne.addEventListener('click', updateDiffOne);
     diffTwo.addEventListener('click', updateDiffTwo);
+    btnStart.addEventListener('click', () => {
+        btnStart.classList.add('hide');
+        btnRestart.classList.remove('hide');
+
+        // Start Game Function from Game Module
+    });
 
     // Webpage Init Listener
     document.addEventListener('DOMContentLoaded', () => {
