@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Julee&family=Mansalva&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Julee&display=swap');
 
 :root {
     /*Dola Colour Palette*/
@@ -56,14 +56,14 @@
 
     --size-heading: 5rem;
     --size-txt: 1.125rem;
-    --size-game-tile: 6rem;
+    --size-game-tile: 7.5rem;
     --size-header-name: 1.6rem;
     --size-form-label: 1.25rem;
     --size-form-input: 1.5rem;
     --size-footers: 1rem;
     --size-button: 1.3rem;
-    --size-sb-name: 1.5rem;
-    --size-sb-score: 2.4rem;
+    --size-sb-name: 2rem;
+    --size-sb-score: 2.6rem;
 
     --weight-light: 300;
     --weight-normal: 500;
@@ -330,8 +330,9 @@ button.diff:active {
     background-color: var(--background-header-tile);
     border-radius: 2rem;
     box-shadow: var(--shadow-card);
+    font-family: 'Indie Flower', cursive;
     font-size: var(--size-game-tile);
-    font-family: 'Mansalva', cursive;
+    font-weight: var(--weight-heavy);
     color: var(--txt-game-tile);
     transition: all 0.1s var(--anim-tile);
 }
