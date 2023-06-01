@@ -12,7 +12,10 @@ const indexAttr = 'data-index';
 // FACTORIES
 const GameBoard = () => {
     let board = Array.from(Array(9).fill(undefined));
-    console.log(board);
+
+    function addTile(index, value) {
+        board[index] = value;
+    }
 
     function emptyBoard() {
         board.fill(undefined);
@@ -22,7 +25,18 @@ const GameBoard = () => {
         return board.length;
     }
 
-    return {emptyBoard, boardLength};
+    // View the Board on Console
+    function printBoard() {
+        let boardPrinted = '';
+
+        for (let i = 0; i < boardLength(); i++) {
+            if (i % 3 === 0) boardPrinted += '\n';
+            boardPrinted += `| ${board[i] === undefined ? '-' : board[i]} | `;
+        }
+        console.log(boardPrinted);
+    }
+
+    return {addTile, emptyBoard, boardLength, printBoard};
 };
 
 // MODULES
@@ -108,8 +122,10 @@ const GAMECTRL = (() => {
 
     // Tile is Clicked Event
     function turnClick(target) {
-        console.log(target.getAttribute(indexAttr));
+        let clickedIndex = target.getAttribute(indexAttr);
+        activeBoard.addTile(clickedIndex, "X");
         target.textContent = "X";
+        activeBoard.printBoard();
     }
 
     return {StartNewGame};
