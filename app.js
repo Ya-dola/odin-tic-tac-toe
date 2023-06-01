@@ -1,29 +1,38 @@
 // ENUMS
-const diffOptions = Object.freeze({
-                                      HUMAN: 'Human',
-                                      EASY: 'AI - Easy',
-                                      MEDIUM: 'AI - Medium',
-                                      HARD: 'AI - Hard'
-                                  });
+const DIFFOPTS = Object.freeze({
+                                   HUMAN: 'Human',
+                                   EASY: 'AI - Easy',
+                                   MEDIUM: 'AI - Medium',
+                                   HARD: 'AI - Hard'
+                               });
 
-// Constants
-const indexAttr = 'data-index';
+const SYMBOLX = 'X';
+const SYMBOLO = 'O';
+
+const getDiffVal = (index) => Object.values(DIFFOPTS)[index];
 
 // FACTORIES
-const GameBoard = () => {
+const Player = (symbol) => {
+    let name = '';
+    let type = DIFFOPTS.HUMAN;
+
+    const setName = (newName) => name = newName;
+    const getName = () => name;
+    const getSymbol = () => symbol;
+    const setType = (newType) => type = newType;
+    const getType = () => type;
+
+    return {setName, getName, getSymbol, setType, getType};
+};
+
+// MODULES
+const GameBoard = (() => {
     let board = Array.from(Array(9).fill(undefined));
 
-    function addTile(index, value) {
-        board[index] = value;
-    }
-
-    function emptyBoard() {
-        board.fill(undefined);
-    }
-
-    function boardLength() {
-        return board.length;
-    }
+    const getBoard = () => board;
+    const addTile = (index, value) => board[index] = value;
+    const emptyBoard = () => board.fill(undefined);
+    const boardLength = () => board.length;
 
     // View the Board on Console
     function printBoard() {
@@ -36,11 +45,10 @@ const GameBoard = () => {
         console.log(boardPrinted);
     }
 
-    return {addTile, emptyBoard, boardLength, printBoard};
-};
+    return {getBoard, addTile, emptyBoard, boardLength, printBoard};
+})();
 
-// MODULES
-const DETAILS = (() => {
+const Details = (() => {
     const inputOne = document.getElementById('inputOne');
     const inputTwo = document.getElementById('inputTwo');
     const diffOne = document.getElementById('diffOne');
@@ -49,19 +57,19 @@ const DETAILS = (() => {
     const sbTwo = document.getElementById('sbTwo');
     const btnGame = document.getElementById('btnGame');
 
-    let plyrOneName = "";
-    let plyrTwoName = "";
-    let diffOneCtr = 0; // Default = Human
-    let diffTwoCtr = 1; // Default = AI - Easy
+    let plyrOneName = "Player One";
+    let plyrTwoName = "Player Two";
+    let diffOneCtr = -1; // Default = Human
+    let diffTwoCtr = 0; // Default = AI - Easy
 
     function updateDiffOne() {
-        diffOne.textContent = Object.values(diffOptions)[diffOneCtr];
         if (++diffOneCtr > 3) diffOneCtr = 0;
+        diffOne.textContent = getDiffVal(diffOneCtr);
     }
 
     function updateDiffTwo() {
-        diffTwo.textContent = Object.values(diffOptions)[diffTwoCtr];
         if (++diffTwoCtr > 3) diffTwoCtr = 0;
+        diffTwo.textContent = getDiffVal(diffTwoCtr);
     }
 
     inputOne.addEventListener('blur', () => {
@@ -78,7 +86,7 @@ const DETAILS = (() => {
         btnGame.textContent = "Restart";
 
         // Start Game Function from Game Ctrl Module
-        GAMECTRL.StartNewGame();
+        GameCtrl.StartNewGame(plyrOneName, plyrTwoName, diffOneCtr, diffTwoCtr);
     });
 
     // Webpage Init Listener
@@ -87,45 +95,94 @@ const DETAILS = (() => {
         updateDiffTwo();
     });
 
-    return {plyrOneName, plyrTwoName, diffOneCtr, diffTwoCtr};
+    return {plyrOneName, plyrTwoName};
 })();
 
-const GAMECTRL = (() => {
+const GameCtrl = (() => {
+    const INDEXATTR = Object.freeze('data-index');
+
     const gameBoardView = document.getElementById('gameBoardView');
 
-    const activeBoard = GameBoard();
+    const WINCONDS = Object.freeze([
+                                       [0, 1, 2],
+                                       [3, 4, 5],
+                                       [6, 7, 8],
+                                       [0, 3, 6],
+                                       [1, 4, 7],
+                                       [2, 5, 8],
+                                       [0, 4, 8],
+                                       [2, 4, 6]
+                                   ]);
+
+    const plyrOne = Player(SYMBOLX);
+    const plyrTwo = Player(SYMBOLO);
+
+    let currPlayer = plyrOne;
 
     function resetExistingBoard() {
-        activeBoard.emptyBoard();
+        GameBoard.emptyBoard();
         gameBoardView.innerHTML = "";
     }
 
     function displayBoardView() {
-        for (let i = 0; i < activeBoard.boardLength(); i++) {
+        for (let i = 0; i < GameBoard.boardLength(); i++) {
             const boardTile = document.createElement('div');
 
             boardTile.classList.add('tile');
-            boardTile.setAttribute(indexAttr, i.toString());
+            boardTile.setAttribute(INDEXATTR, i.toString());
             boardTile.addEventListener('click', (evt) => {
                 turnClick(evt.target);
+                boardTile.style.pointerEvents = 'none'; // Only Clickable Once
             });
 
             gameBoardView.appendChild(boardTile);
         }
     }
 
-    function StartNewGame() {
+    function StartNewGame(plyrOneName, plyrTwoName, diffOneCtr, diffTwoCtr) {
         resetExistingBoard();
-
         displayBoardView();
+
+        plyrOne.setName(plyrOneName);
+        plyrOne.setType(getDiffVal(diffOneCtr));
+
+        plyrTwo.setName(plyrTwoName);
+        plyrTwo.setType(getDiffVal(diffTwoCtr));
+
+        currPlayer = plyrOne;
     }
 
     // Tile is Clicked Event
     function turnClick(target) {
-        let clickedIndex = target.getAttribute(indexAttr);
-        activeBoard.addTile(clickedIndex, "X");
-        target.textContent = "X";
-        activeBoard.printBoard();
+        let clickedIndex = target.getAttribute(INDEXATTR);
+        GameBoard.addTile(clickedIndex, currPlayer.getSymbol());
+        target.textContent = currPlayer.getSymbol();
+
+        GameBoard.printBoard();
+        finishTurn();
+    }
+
+    function switchCurrPlyr() {
+        currPlayer = currPlayer.getSymbol() === SYMBOLX ? plyrTwo : plyrOne;
+    }
+
+    function finishTurn() {
+        checkRoundWin();
+        switchCurrPlyr();
+    }
+
+    function checkRoundWin() {
+        let playedPositions = GameBoard.getBoard().reduce(
+            (a, e, i) => (e === currPlayer.getSymbol() ? a.concat(i) : a), []);
+
+        for (let [i, winCond] of WINCONDS.entries()) {
+            // Current Player Wins
+            if (winCond.every((e) => playedPositions.indexOf(e) > -1)) {
+                console.log(`${currPlayer.getName()} wins with symbol ${currPlayer.getSymbol()}`);
+                break;
+            }
+        }
+
     }
 
     return {StartNewGame};
