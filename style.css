@@ -64,6 +64,7 @@
     --size-button: 1.3rem;
     --size-sb-name: 2rem;
     --size-sb-score: 2.6rem;
+    --size-announcement: 3rem;
 
     --weight-light: 300;
     --weight-normal: 500;
@@ -345,6 +346,20 @@ button.diff:active {
 .board-game .tile:active {
     scale: 0.96;
     filter: brightness(84%);
+}
+
+.content .result {
+    font-family: 'Julee', cursive;
+    font-weight: var(--weight-normal);
+    font-size: var(--size-announcement);
+    color: var(--txt-dark1);
+    padding: 0.5rem 1.4rem;
+    transition: all 0.5s var(--anim-tile);
+    transform: scale(0);
+}
+
+.content .result.visible {
+    transform: scale(1);
 }
 
 .footer {

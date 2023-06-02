@@ -6,10 +6,15 @@ const DIFFOPTS = Object.freeze({
                                    HARD: 'AI - Hard'
                                });
 
+// CONSTANTS
 const SYMBOLX = 'X';
 const SYMBOLO = 'O';
 
 const getDiffVal = (index) => Object.values(DIFFOPTS)[index];
+
+const delay = (time) => new Promise(resolve => setTimeout(resolve, time));
+
+const ROUNDENDDELAY = Object.freeze(2000);
 
 // FACTORIES
 const Player = (symbol) => {
@@ -23,6 +28,17 @@ const Player = (symbol) => {
     const getType = () => type;
 
     return {setName, getName, getSymbol, setType, getType};
+};
+
+const Counter = () => {
+    let counter = 0;
+
+    const plus = () => counter++;
+
+    const reset = () => counter = 0;
+    const count = () => counter;
+
+    return {plus, reset, count};
 };
 
 // MODULES
@@ -85,7 +101,6 @@ const Details = (() => {
     btnGame.addEventListener('click', () => {
         btnGame.textContent = "Restart";
 
-        // Start Game Function from Game Ctrl Module
         GameCtrl.StartNewGame(plyrOneName, plyrTwoName, diffOneCtr, diffTwoCtr);
     });
 
@@ -95,7 +110,80 @@ const Details = (() => {
         updateDiffTwo();
     });
 
-    return {plyrOneName, plyrTwoName};
+    return {};
+})();
+
+const ScoreBoard = (() => {
+    const cardOne = document.getElementById('cardOne');
+    const cardTwo = document.getElementById('cardTwo');
+    const scoreResult = document.getElementById('scoreResult');
+    const sCardRoundNum = document.getElementById('sCardRoundNum');
+    const sCardOne = document.getElementById('sCardOne');
+    const sCardTwo = document.getElementById('sCardTwo');
+
+    const DEACTIVECLASS = Object.freeze('de-active');
+
+    let scorePlyrOne = 0;
+    let scorePlyrTwo = 0;
+    let roundNum = 1;
+
+    const updateSCardOne = (score) => sCardOne.textContent = score;
+    const updateSCardTwo = (score) => sCardTwo.textContent = score;
+    const updateSRoundNum = (num) => sCardRoundNum.textContent = num;
+
+    const addSCardOne = () => updateSCardOne(++scorePlyrOne);
+    const addSCardTwo = () => updateSCardTwo(++scorePlyrTwo);
+    const addSRound = () => updateSRoundNum(++roundNum);
+
+    function resetScores() {
+        scorePlyrOne = 0;
+        scorePlyrTwo = 0;
+
+        updateSCardOne(scorePlyrOne);
+        updateSCardTwo(scorePlyrTwo);
+    }
+
+    function resetRounds() {
+        roundNum = 1;
+
+        updateSRoundNum(roundNum);
+    }
+
+    function switchActivePlyr(activeSymbol) {
+        if (activeSymbol === SYMBOLX) {
+            cardTwo.classList.add(DEACTIVECLASS);
+            cardOne.classList.remove(DEACTIVECLASS);
+        }
+        else {
+            cardOne.classList.add(DEACTIVECLASS);
+            cardTwo.classList.remove(DEACTIVECLASS);
+        }
+    }
+
+    async function displayResult(name, resType) {
+        switch (resType) {
+            case 2:
+                scoreResult.textContent = `${name} Won the Game !!!`;
+                break;
+            case 1:
+                scoreResult.textContent = `${name} Won Round ${roundNum} !!!`;
+                break;
+            default:
+                scoreResult.textContent = `Round ${roundNum} is a Draw !!!`;
+                break;
+        }
+
+        scoreResult.classList.add('visible');
+
+        await delay(ROUNDENDDELAY);
+
+        scoreResult.classList.remove('visible');
+    }
+
+    return {
+        addSCardOne, addSCardTwo, addSRound, resetScores,
+        resetRounds, switchActivePlyr, displayResult
+    };
 })();
 
 const GameCtrl = (() => {
@@ -119,6 +207,17 @@ const GameCtrl = (() => {
 
     let currPlayer = plyrOne;
 
+    let allowTilesClick = true;
+    const moveCounter = Counter(0);
+
+    async function disableTileClicksTemp() {
+        allowTilesClick = false;
+        await delay(ROUNDENDDELAY);
+        allowTilesClick = true;
+    }
+
+    const disableTileClicks = () => allowTilesClick = false;
+
     function resetExistingBoard() {
         GameBoard.emptyBoard();
         gameBoardView.innerHTML = "";
@@ -131,8 +230,10 @@ const GameCtrl = (() => {
             boardTile.classList.add('tile');
             boardTile.setAttribute(INDEXATTR, i.toString());
             boardTile.addEventListener('click', (evt) => {
-                turnClick(evt.target);
-                boardTile.style.pointerEvents = 'none'; // Only Clickable Once
+                if (allowTilesClick) {
+                    turnClick(evt.target);
+                    boardTile.style.pointerEvents = 'none'; // Only Clickable Once
+                }
             });
 
             gameBoardView.appendChild(boardTile);
@@ -143,6 +244,11 @@ const GameCtrl = (() => {
         resetExistingBoard();
         displayBoardView();
 
+        ScoreBoard.resetScores();
+        ScoreBoard.resetRounds();
+        allowTilesClick = true;
+        moveCounter.reset();
+
         plyrOne.setName(plyrOneName);
         plyrOne.setType(getDiffVal(diffOneCtr));
 
@@ -150,6 +256,27 @@ const GameCtrl = (() => {
         plyrTwo.setType(getDiffVal(diffTwoCtr));
 
         currPlayer = plyrOne;
+
+        ScoreBoard.switchActivePlyr(currPlayer.getSymbol());
+    }
+
+    function switchCurrPlyr() {
+        currPlayer = currPlayer.getSymbol() === SYMBOLX ? plyrTwo : plyrOne;
+        ScoreBoard.switchActivePlyr(currPlayer.getSymbol());
+    }
+
+    async function NewRound() {
+        moveCounter.reset();
+
+        await delay(ROUNDENDDELAY);
+
+        ScoreBoard.addSRound();
+
+        resetExistingBoard();
+        displayBoardView();
+
+        // Switch After a Delay on New Round
+        switchCurrPlyr();
     }
 
     // Tile is Clicked Event
@@ -158,33 +285,50 @@ const GameCtrl = (() => {
         GameBoard.addTile(clickedIndex, currPlayer.getSymbol());
         target.textContent = currPlayer.getSymbol();
 
-        GameBoard.printBoard();
+        // TODO - DEBUG
+        // GameBoard.printBoard();
         finishTurn();
     }
 
-    function switchCurrPlyr() {
-        currPlayer = currPlayer.getSymbol() === SYMBOLX ? plyrTwo : plyrOne;
-    }
-
     function finishTurn() {
-        checkRoundWin();
-        switchCurrPlyr();
-    }
+        moveCounter.plus();
 
-    function checkRoundWin() {
-        let playedPositions = GameBoard.getBoard().reduce(
-            (a, e, i) => (e === currPlayer.getSymbol() ? a.concat(i) : a), []);
-
-        for (let [i, winCond] of WINCONDS.entries()) {
-            // Current Player Wins
-            if (winCond.every((e) => playedPositions.indexOf(e) > -1)) {
-                console.log(`${currPlayer.getName()} wins with symbol ${currPlayer.getSymbol()}`);
-                break;
-            }
+        // If Curr Player wins the Round
+        if (checkRoundWin(currPlayer)) {
+            updateRoundWinner(currPlayer);
+            disableTileClicksTemp().then();
+            NewRound().then();
         }
-
+        // If Round is a Draw
+        else if (moveCounter.count() >= 9) {
+            ScoreBoard.displayResult('', 0).then();
+            NewRound().then();
+        }
+        // Switch Instantly After Turn
+        else switchCurrPlyr();
     }
 
-    return {StartNewGame};
+    function checkRoundWin(player) {
+        // Get Index Positions Played by the Current Player's Symbol
+        let playedPositions = GameBoard.getBoard().reduce(
+            (a, e, i) => (e === player.getSymbol() ? a.concat(i) : a), []);
+
+        // Checks Each Possible Win Condition and if that combination exists in playedPositions
+        for (let [i, winCond] of WINCONDS.entries()) {
+
+            // Current Player Wins the Round
+            if (winCond.every((e) => playedPositions.indexOf(e) > -1)) return true;
+        }
+        return false;
+    }
+
+    function updateRoundWinner(player) {
+        ScoreBoard.displayResult(player.getName(), 1).then();
+
+        // Update the Score Accordingly
+        player.getSymbol() === SYMBOLX ? ScoreBoard.addSCardOne() : ScoreBoard.addSCardTwo();
+    }
+
+    return {StartNewGame, disableTileClicks};
 })();
 
