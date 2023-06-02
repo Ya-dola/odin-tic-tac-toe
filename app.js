@@ -69,8 +69,6 @@ const Details = (() => {
     const inputTwo = document.getElementById('inputTwo');
     const diffOne = document.getElementById('diffOne');
     const diffTwo = document.getElementById('diffTwo');
-    const sbOne = document.getElementById('sbOne');
-    const sbTwo = document.getElementById('sbTwo');
     const btnGame = document.getElementById('btnGame');
 
     let plyrOneName = "Player One";
@@ -90,11 +88,9 @@ const Details = (() => {
 
     inputOne.addEventListener('blur', () => {
         plyrOneName = inputOne.value !== '' ? inputOne.value : "Player One";
-        sbOne.textContent = inputOne.value !== '' ? inputOne.value : "Player One";
     });
     inputTwo.addEventListener('blur', () => {
         plyrTwoName = inputTwo.value !== '' ? inputTwo.value : "Player Two";
-        sbTwo.textContent = inputTwo.value !== '' ? inputTwo.value : "Player Two";
     });
     diffOne.addEventListener('click', updateDiffOne);
     diffTwo.addEventListener('click', updateDiffTwo);
@@ -116,6 +112,8 @@ const Details = (() => {
 const ScoreBoard = (() => {
     const cardOne = document.getElementById('cardOne');
     const cardTwo = document.getElementById('cardTwo');
+    const sbNameOne = document.getElementById('sbNameOne');
+    const sbNameTwo = document.getElementById('sbNameTwo');
     const scoreResult = document.getElementById('scoreResult');
     const sCardRoundNum = document.getElementById('sCardRoundNum');
     const sCardOne = document.getElementById('sCardOne');
@@ -126,6 +124,9 @@ const ScoreBoard = (() => {
     let scorePlyrOne = 0;
     let scorePlyrTwo = 0;
     let roundNum = 1;
+
+    const setSbNameOne = (name) => sbNameOne.textContent = name;
+    const setSbNameTwo = (name) => sbNameTwo.textContent = name;
 
     const updateSCardOne = (score) => sCardOne.textContent = score;
     const updateSCardTwo = (score) => sCardTwo.textContent = score;
@@ -181,8 +182,8 @@ const ScoreBoard = (() => {
     }
 
     return {
-        addSCardOne, addSCardTwo, addSRound, resetScores,
-        resetRounds, switchActivePlyr, displayResult
+        setSbNameOne, setSbNameTwo, addSCardOne, addSCardTwo,
+        addSRound, resetScores, resetRounds, switchActivePlyr, displayResult
     };
 })();
 
@@ -251,9 +252,11 @@ const GameCtrl = (() => {
 
         plyrOne.setName(plyrOneName);
         plyrOne.setType(getDiffVal(diffOneCtr));
+        ScoreBoard.setSbNameOne(plyrOneName);
 
         plyrTwo.setName(plyrTwoName);
         plyrTwo.setType(getDiffVal(diffTwoCtr));
+        ScoreBoard.setSbNameTwo(plyrTwoName);
 
         currPlayer = plyrOne;
 
@@ -323,10 +326,10 @@ const GameCtrl = (() => {
     }
 
     function updateRoundWinner(player) {
-        ScoreBoard.displayResult(player.getName(), 1).then();
-
         // Update the Score Accordingly
         player.getSymbol() === SYMBOLX ? ScoreBoard.addSCardOne() : ScoreBoard.addSCardTwo();
+
+        ScoreBoard.displayResult(player.getName(), 1).then();
     }
 
     return {StartNewGame, disableTileClicks};

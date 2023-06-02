@@ -103,7 +103,7 @@
     --shadow-sb-two: 0 0 4px 2px var(--clr-sb-two),
     0 0 6px -2px rgba(0, 0, 0, 0.25);
     --shadow-deactive: 0 0 4px 2px var(--white2),
-    0 0 10px -2px rgba(0, 0, 0, 0.8);
+    0 0 10px -2px rgba(0, 0, 0, 0.94);
 }
 
 *,
