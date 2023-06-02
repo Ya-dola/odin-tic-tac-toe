@@ -349,6 +349,8 @@ button.diff:active {
 }
 
 .content .result {
+    white-space: pre-line;
+    text-align: center;
     font-family: 'Julee', cursive;
     font-weight: var(--weight-normal);
     font-size: var(--size-announcement);

@@ -125,6 +125,9 @@ const ScoreBoard = (() => {
     let scorePlyrTwo = 0;
     let roundNum = 1;
 
+    const plyrOneScore = () => scorePlyrOne;
+    const plyrTwoScore = () => scorePlyrTwo;
+
     const setSbNameOne = (name) => sbNameOne.textContent = name;
     const setSbNameTwo = (name) => sbNameTwo.textContent = name;
 
@@ -164,7 +167,8 @@ const ScoreBoard = (() => {
     async function displayResult(name, resType) {
         switch (resType) {
             case 2:
-                scoreResult.textContent = `${name} Won the Game !!!`;
+                scoreResult.textContent = `${name} Won the Game !!!\n` +
+                                          `Restart to Play Again !`;
                 break;
             case 1:
                 scoreResult.textContent = `${name} Won Round ${roundNum} !!!`;
@@ -176,19 +180,22 @@ const ScoreBoard = (() => {
 
         scoreResult.classList.add('visible');
 
-        await delay(ROUNDENDDELAY);
-
-        scoreResult.classList.remove('visible');
+        if (resType !== 2) {
+            await delay(ROUNDENDDELAY);
+            scoreResult.classList.remove('visible');
+        }
     }
 
     return {
-        setSbNameOne, setSbNameTwo, addSCardOne, addSCardTwo,
-        addSRound, resetScores, resetRounds, switchActivePlyr, displayResult
+        plyrOneScore, plyrTwoScore, setSbNameOne, setSbNameTwo,
+        addSCardOne, addSCardTwo, addSRound, resetScores, resetRounds,
+        switchActivePlyr, displayResult
     };
 })();
 
 const GameCtrl = (() => {
     const INDEXATTR = Object.freeze('data-index');
+    const MAXSCORE = Object.freeze(3);
 
     const gameBoardView = document.getElementById('gameBoardView');
 
@@ -296,11 +303,20 @@ const GameCtrl = (() => {
     function finishTurn() {
         moveCounter.plus();
 
-        // If Curr Player wins the Round
-        if (checkRoundWin(currPlayer)) {
+        // If currPlayer wins the Round
+        if (checkRoundWinner(currPlayer)) {
             updateRoundWinner(currPlayer);
-            disableTileClicksTemp().then();
-            NewRound().then();
+
+            // If currPlayer wins the Game
+            if (checkGameWinner(currPlayer)) {
+                displayResult(currPlayer, 2);
+                disableTileClicks();
+            }
+            else {
+                displayResult(currPlayer, 1);
+                disableTileClicksTemp().then();
+                NewRound().then();
+            }
         }
         // If Round is a Draw
         else if (moveCounter.count() >= 9) {
@@ -311,7 +327,7 @@ const GameCtrl = (() => {
         else switchCurrPlyr();
     }
 
-    function checkRoundWin(player) {
+    function checkRoundWinner(player) {
         // Get Index Positions Played by the Current Player's Symbol
         let playedPositions = GameBoard.getBoard().reduce(
             (a, e, i) => (e === player.getSymbol() ? a.concat(i) : a), []);
@@ -325,13 +341,27 @@ const GameCtrl = (() => {
         return false;
     }
 
+    function checkGameWinner(player) {
+        let result;
+
+        if (player.getSymbol() === SYMBOLX)
+            ScoreBoard.plyrOneScore() >= MAXSCORE ? result = true : result = false;
+        else
+            ScoreBoard.plyrTwoScore() >= MAXSCORE ? result = true : result = false;
+
+        return result;
+    }
+
     function updateRoundWinner(player) {
         // Update the Score Accordingly
         player.getSymbol() === SYMBOLX ? ScoreBoard.addSCardOne() : ScoreBoard.addSCardTwo();
-
-        ScoreBoard.displayResult(player.getName(), 1).then();
     }
 
-    return {StartNewGame, disableTileClicks};
+    function displayResult(player, resType) {
+        // Display the Result
+        ScoreBoard.displayResult(player.getName(), resType).then();
+    }
+
+    return {StartNewGame};
 })();
 
