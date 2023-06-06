@@ -364,6 +364,10 @@ button.diff:active {
     transform: scale(1);
 }
 
+.content .result.error {
+    color: var(--txt-error);
+}
+
 .footer {
     grid-area: footer;
     display: flex;

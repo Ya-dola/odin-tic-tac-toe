@@ -14,7 +14,7 @@ const getDiffVal = (index) => Object.values(DIFFOPTS)[index];
 
 const delay = (time) => new Promise(resolve => setTimeout(resolve, time));
 
-const ROUNDENDDELAY = Object.freeze(2000);
+const ROUNDENDDELAY = Object.freeze(1500);
 
 // FACTORIES
 const Player = (symbol) => {
@@ -50,6 +50,9 @@ const GameBoard = (() => {
     const emptyBoard = () => board.fill(undefined);
     const boardLength = () => board.length;
 
+    const getUndefinedTiles = () => board.reduce(
+        (a, e, i) => (e === undefined ? a.push(i) : a), []);
+
     // View the Board on Console
     function printBoard() {
         let boardPrinted = '';
@@ -61,7 +64,7 @@ const GameBoard = (() => {
         console.log(boardPrinted);
     }
 
-    return {getBoard, addTile, emptyBoard, boardLength, printBoard};
+    return {getBoard, addTile, emptyBoard, boardLength, getUndefinedTiles, printBoard};
 })();
 
 const Details = (() => {
@@ -120,6 +123,8 @@ const ScoreBoard = (() => {
     const sCardTwo = document.getElementById('sCardTwo');
 
     const DEACTIVECLASS = Object.freeze('de-active');
+    const VISIBLECLASS = Object.freeze('visible');
+    const ERRORCLASS = Object.freeze('error');
 
     let scorePlyrOne = 0;
     let scorePlyrTwo = 0;
@@ -178,19 +183,115 @@ const ScoreBoard = (() => {
                 break;
         }
 
-        scoreResult.classList.add('visible');
+        scoreResult.classList.add(VISIBLECLASS);
 
+        // Only Hide Result if it was not a Game Win Result
         if (resType !== 2) {
             await delay(ROUNDENDDELAY);
-            scoreResult.classList.remove('visible');
+            scoreResult.classList.remove(VISIBLECLASS);
         }
+    }
+
+    function displayErrorRes(errMsg) {
+        scoreResult.textContent = errMsg;
+        scoreResult.classList.add(VISIBLECLASS);
+        scoreResult.classList.add(ERRORCLASS);
+    }
+
+    function resetScoreResult() {
+        scoreResult.textContent = '';
+        scoreResult.classList.remove(VISIBLECLASS);
+        scoreResult.classList.remove(ERRORCLASS);
     }
 
     return {
         plyrOneScore, plyrTwoScore, setSbNameOne, setSbNameTwo,
         addSCardOne, addSCardTwo, addSRound, resetScores, resetRounds,
-        switchActivePlyr, displayResult
+        switchActivePlyr, displayResult, displayErrorRes, resetScoreResult
     };
+})();
+
+const aiLogic = (() => {
+    let aiDiffPrct = 0;
+
+    const setAiDiffPrct = (amt) => aiDiffPrct = amt;
+
+    function aiTurnIndex() {
+        const randPrct = Math.floor(Math.random() * (100 + 1));
+
+        let turnIndex = undefined;
+
+        // Uses Min Max Logic if Rand Percent is Less than the AI Difficulty Percent
+        if (randPrct <= aiDiffPrct) {
+            turnIndex = minMax(GameCtrl.getAiPlyr()).index;
+        }
+        else { // Uses Random Placement on remaining Undefined Tiles
+            const undefinedTiles = GameBoard.getUndefinedTiles();
+            turnIndex = undefinedTiles[Math.floor((Math.random() * undefinedTiles.length))];
+        }
+
+        return turnIndex;
+    }
+
+    function minMax(player) {
+        let undefinedTiles = GameBoard.getUndefinedTiles();
+        let aiBoard = GameBoard.getBoard();
+
+        if (undefinedTiles.length === 0) return {score: 0}; // Draw
+        else if (GameCtrl.checkRoundWinner(GameCtrl.getHumanPlyr())) return {score: -10}; // Human Wins
+        else if (GameCtrl.checkRoundWinner(GameCtrl.getAiPlyr())) return {score: 10}; // AI Wins
+
+        return getBestMove(getPossibleMoves(aiBoard, undefinedTiles, player), player);
+    }
+
+    function getPossibleMoves(aiBoard, undefinedTiles, player) {
+        let possibleMoves = [];
+
+        // Determine Scores for all Remaining Tiles
+        for (let i = 0; i < undefinedTiles.length; i++) {
+            let move = {};
+            move.index = aiBoard[undefinedTiles[i]];
+            aiBoard[undefinedTiles[i]] = player;
+
+            if (player.getSymbol() === GameCtrl.getAiPlyr().getSymbol())
+                move.score = minMax(GameCtrl.getHumanPlyr()).score;
+            else move.score = minMax(GameCtrl.getAiPlyr()).score;
+
+            aiBoard[undefinedTiles[i]] = move.index;
+
+            possibleMoves.push(move);
+        }
+
+        return possibleMoves;
+    }
+
+    function getBestMove(possibleMoves, player) {
+        let bestMoveIndex = null;
+        let bestScore = 0;
+
+        if (player === GameCtrl.getAiPlyr()) {
+            bestScore = -10000;
+            for (let i = 0; i < possibleMoves.length; i++) {
+                if (possibleMoves[i].score > bestScore) {
+                    bestScore = possibleMoves[i].score;
+                    bestMoveIndex = i;
+                }
+            }
+        }
+        else {
+            bestScore = 10000;
+            for (let i = 0; i < possibleMoves.length; i++) {
+                if (possibleMoves[i].score < bestScore) {
+                    bestScore = possibleMoves[i].score;
+                    bestMoveIndex = i;
+                }
+            }
+        }
+
+        return possibleMoves[bestMoveIndex];
+    }
+
+    return {setAiDiffPrct, aiTurnIndex};
 })();
 
 const GameCtrl = (() => {
@@ -217,6 +318,12 @@ const GameCtrl = (() => {
 
     let allowTilesClick = true;
     const moveCounter = Counter(0);
+
+    let humanPlyr = plyrOne;
+    let aiPlyr = plyrTwo;
+
+    const getHumanPlyr = () => humanPlyr;
+    const getAiPlyr = () => aiPlyr;
 
     async function disableTileClicksTemp() {
         allowTilesClick = false;
@@ -250,10 +357,9 @@ const GameCtrl = (() => {
 
     function StartNewGame(plyrOneName, plyrTwoName, diffOneCtr, diffTwoCtr) {
         resetExistingBoard();
-        displayBoardView();
-
         ScoreBoard.resetScores();
         ScoreBoard.resetRounds();
+        ScoreBoard.resetScoreResult();
         allowTilesClick = true;
         moveCounter.reset();
 
@@ -265,14 +371,36 @@ const GameCtrl = (() => {
         plyrTwo.setType(getDiffVal(diffTwoCtr));
         ScoreBoard.setSbNameTwo(plyrTwoName);
 
-        currPlayer = plyrOne;
+        // TODO - Determining Bot Logic
+        // Either One of the Players Need to Be Human
+        if (!(plyrOne.getType() === getDiffVal(0) ||
+              plyrTwo.getType() === getDiffVal(0))) {
+            ScoreBoard.displayErrorRes(`${plyrOneName} or ${plyrTwoName} Needs to be Human!`);
+        }
+        else {
+            if (plyrOne.getType() === getDiffVal(0)) {
+                humanPlyr = plyrOne;
+                aiPlyr = plyrTwo;
+            }
+            else {
+                humanPlyr = plyrTwo;
+                aiPlyr = plyrOne;
+            }
 
-        ScoreBoard.switchActivePlyr(currPlayer.getSymbol());
+            displayBoardView();
+            currPlayer = plyrOne;
+            ScoreBoard.switchActivePlyr(currPlayer.getSymbol());
+        }
     }
 
     function switchCurrPlyr() {
         currPlayer = currPlayer.getSymbol() === SYMBOLX ? plyrTwo : plyrOne;
         ScoreBoard.switchActivePlyr(currPlayer.getSymbol());
+
+        // TODO - AI Turn Logic Here
+        // if (aiPlyr === currPlayer) {
+        //     finishTurn();
+        // }
     }
 
     async function NewRound() {
@@ -362,6 +490,6 @@ const GameCtrl = (() => {
         ScoreBoard.displayResult(player.getName(), resType).then();
     }
 
-    return {StartNewGame};
+    return {getHumanPlyr, getAiPlyr, StartNewGame, checkRoundWinner};
 })();
 
